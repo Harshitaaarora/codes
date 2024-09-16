@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RailMadad - A Grievance Redressal Mechanism</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+        <header class="bg-white p-4 flex items-center justify-between border-b">
+            <i class="fas fa-bars text-gray-600"></i>
+            <div class="flex items-center">
+                <h1 class="text-2xl font-bold text-blue-600">RailMadad</h1>
+                <p class="text-xs text-gray-600 ml-2">A Grievance Redressal Mechanism</p>
+            </div>
+            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/8/83/Indian_Railways.svg/640px-Indian_Railways.svg.png" alt="Indian Railways logo" class="w-6 h-6">
+        </header>
+        
+        <div class="bg-red-600 text-white p-2 text-center flex items-center justify-center">
+            <i class="fas fa-phone mr-2"></i>
+            <p>139 for Security/Medical Assistance</p>
+        </div>
+        
+        <nav class="flex justify-around p-2 bg-gray-200 text-xs overflow-x-auto" id="nav-tabs">
+            <button class="flex flex-col items-center px-2 py-1 text-blue-600" data-tab="train">
+                <i class="fas fa-train mb-1"></i>
+                Train Complaint
+            </button>
+            <button class="flex flex-col items-center px-2 py-1 text-gray-600" data-tab="station">
+                <i class="fas fa-building mb-1"></i>
+                Station Complaint
+            </button>
+            <button class="flex flex-col items-center px-2 py-1 text-gray-600" data-tab="freight">
+                <i class="fas fa-box mb-1"></i>
+                Freight Parcel Inquiry
+            </button>
+            <button class="flex flex-col items-center px-2 py-1 text-gray-600" data-tab="track">
+                <i class="fas fa-chart-line mb-1"></i>
+                Track Complaint
+            </button>
+            <button class="flex flex-col items-center px-2 py-1 text-gray-600" data-tab="suggestions">
+                <i class="fas fa-question-circle mb-1"></i>
+                Suggestions
+            </button>
+            <button class="flex flex-col items-center px-2 py-1 text-gray-600" data-tab="anubhav">
+                <i class="fas fa-clipboard-list mb-1"></i>
+                Rail Anubhav
+            </button>
+        </nav>
+        
+        <div class="p-4" id="form-container">
+            <!-- Forms will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <script>
+        const formContainer = document.getElementById('form-container');
+        const navTabs = document.getElementById('nav-tabs');
+        let activeTab = 'train';
+
+        const forms = {
+            train: `
+                <form id="trainForm" class="space-y-4">
+                    <h2 class="text-lg font-semibold">Get instant help for train related complaint</h2>
+                    <div>
+                        <label for="complaint" class="block text-sm font-medium text-gray-700">Complaint *</label>
+                        <select id="complaint" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required>
+                            <option value="">Select a complaint</option>
+                            <option value="delay">Train Delay</option>
+                            <option value="cleanliness">Cleanliness Issue</option>
+                            <option value="food">Food Quality</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="subComplaint" class="block text-sm font-medium text-gray-700">Sub Complaint *</label>
+                        <select id="subComplaint" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required>
+                            <option value="">Select a sub-complaint</option>
+                            <option value="minor">Minor Issue</option>
+                            <option value="major">Major Issue</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="incidentDate" class="block text-sm font-medium text-gray-700">Incident Date *</label>
+                        <input type="datetime-local" id="incidentDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required>
+                    </div>
+                    <div>
+                        <label for="complaintDescription" class="block text-sm font-medium text-gray-700">Complaint Description *</label>
+                        <textarea id="complaintDescription" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required></textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <button type="button" id="recordAudio" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                            Record Audio
+                        </button>
+                        <button type="button" id="recordVideo" class="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                            Record Video
+                        </button>
+                    </div>
+                    <div id="mediaPreview"></div>
+                    <div class="file-upload"></div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                        Submit
+                    </button>
+                </form>
+            `,
+            station: `
+                <form id="stationForm" class="space-y-4">
+                    <h2 class="text-lg font-semibold">Get instant help for station related complaint</h2>
+                    <div>
+                        <label for="type" class="block text-sm font-medium text-gray-700">Type *</label>
+                        <select id="type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required>
+                            <option value="">Select a type</option>
+                            <option value="cleanliness">Cleanliness</option>
+                            <option value="facilities">Facilities</option>
+                            <option value="staff">Staff Behavior</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="subType" class="block text-sm font-medium text-gray-700">Sub Type *</label>
+                        <select id="subType" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required>
+                            <option value="">Select a sub-type</option>
+                            <option value="minor">Minor Issue</option>
+                            <option value="major">Major Issue</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="inquiryDate" class="block text-sm font-medium text-gray-700">Inquiry Date *</label>
+                        <input type="datetime-local" id="inquiryDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required>
+                    </div>
+                    <div>
+                        <label for="inquiryDescription" class="block text-sm font-medium text-gray-700">Inquiry Description *</label>
+                        <textarea id="inquiryDescription" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required></textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <button type="button" id="recordAudio" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                            Record Audio
+                        </button>
+                        <button type="button" id="recordVideo" class="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                            Record Video
+                        </button>
+                    </div>
+                    <div id="mediaPreview"></div>
+                    <div class="file-upload"></div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                        Submit
+                    </button>
+                </form>
+            `,
+            freight: `
+                <form id="freightForm" class="space-y-4">
+                    <h2 class="text-lg font-semibold">Freight Parcel Inquiry</h2>
+                    <div>
+                        <label for="parcelNumber" class="block text-sm font-medium text-gray-700">Parcel Number *</label>
+                        <input type="text" id="parcelNumber" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required>
+                    </div>
+                    <div>
+                        <label for="inquiryType" class="block text-sm font-medium text-gray-700">Inquiry Type *</label>
+                        <select id="inquiryType" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required>
+                            <option value="">Select an inquiry type</option>
+                            <option value="status">Status Check</option>
+                            <option value="delay">Delay Inquiry</option>
+                            <option value="damage">Damage Report</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="inquiryDescription" class="block text-sm font-medium text-gray-700">Inquiry Description *</label>
+                        <textarea id="inquiryDescription" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required></textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <button type="button" id="recordAudio" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                            Record Audio
+                        </button>
+                        <button type="button" id="recordVideo" class="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                            Record Video
+                        </button>
+                    </div>
+                    <div id="mediaPreview"></div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                        Submit
+                    </button>
+                </form>
+            `,
+            track: `
+                <form id="trackForm" class="space-y-4">
+                    <h2 class="text-lg font-semibold">Be with us for live tracking</h2>
+                    <div>
+                        <label for="referenceNumber" class="block text-sm font-medium text-gray-700">Reference No. *</label>
+                        <input type="text" id="referenceNumber" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                        Submit
+                    </button>
+                </form>
+            `,
+            suggestions: `
+                <form id="suggestionsForm" class="space-y-4">
+                    <h2 class="text-lg font-semibold">Your suggestion is valuable for us</h2>
+                    <div>
+                        <label for="suggestion" class="block text-sm font-medium text-gray-700">Suggestion *</label>
+                        <input type="text" id="suggestion" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required>
+                    </div>
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-700">Description *</label>
+                        <textarea id="description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required></textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <button type="button" id="recordAudio" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                            Record Audio
+                        </button>
+                        <button type="button" id="recordVideo" class="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                            Record Video
+                        </button>
+                    </div>
+                    <div id="mediaPreview"></div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                        Submit
+                    </button>
+                </form>
+            `,
+            anubhav: `
+                <form id="anubhavForm" class="space-y-4">
+                    <h2 class="text-lg font-semibold">Rail Anubhav - Share Your Experience</h2>
+                    <div>
+                        <label for="mode" class="block text-sm font-medium text-gray-700">Mode *</label>
+                        <select id="mode" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required>
+                            <option value="">Select a mode</option>
+                            <option value="train">Train</option>
+                            <option value="station">Station</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="trainOrStation" class="block text-sm font-medium text-gray-700">Train No. / Station Name *</label>
+                        <input type="text" id="trainOrStation" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required>
+                    </div>
+                    <div>
+                        <label for="experience" class="block text-sm font-medium text-gray-700">Write your Experience *</label>
+                        <textarea id="experience" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required></textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <button type="button" id="recordAudio" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                            Record Audio
+                        </button>
+                        <button type="button" id="recordVideo" class="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                            Record Video
+                        </button>
+                    </div>
+                    <div id="mediaPreview"></div>
+                    <div>
+                        <label for="positiveAspects" class="block text-sm font-medium text-gray-700">Positive Aspects *</label>
+                        <textarea id="positiveAspects" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Feedback *</label>
+                        <div class="flex items-center space-x-2 mt-1" id="rating">
+                            <i class="far fa-star text-2xl cursor-pointer" data-rating="1"></i>
+                            <i class="far fa-star text-2xl cursor-pointer" data-rating="2"></i>
+                            <i class="far fa-star text-2xl cursor-pointer" data-rating="3"></i>
+                            <i class="far fa-star text-2xl cursor-pointer" data-rating="4"></i>
+                            <i class="far fa-star text-2xl cursor-pointer" data-rating="5"></i>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                        Submit
+                    </button>
+                </form>
+            `
+        };
+
+        function renderForm(tab) {
+            formContainer.innerHTML = forms[tab];
+            const fileUploadDivs = document.querySelectorAll('.file-upload');
+            fileUploadDivs.forEach(div => {
+                div.innerHTML = `
+                    <label class="block text-sm font-medium text-gray-700">File</label>
+                    <div class="mt-1 flex space-x-2">
+                        <button type="button" class="px-4 py-2 bg-blue-500 text-white rounded-md flex items-center">
+                            <i class="fas fa-camera mr-2"></i>
+                            Camera
+                        </button>
+                        <button type="button" class="px-4 py-2 bg-green-500 text-white rounded-md flex items-center">
+                            <i class="fas fa-upload mr-2"></i>
+                            Upload
+                        </button>
+                    </div>
+                    <p class="mt-1 text-xs text-gray-500">Only JPG, JPEG and PNG images are allowed (Max Size: 5MB)</p>
+                `;
+            });
+
+            if (tab === 'anubhav') {
+                const ratingContainer = document.getElementById('rating');
+                ratingContainer.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'I') {
+                        const rating = parseInt(e.target.dataset.rating);
+                        const stars = ratingContainer.querySelectorAll('i');
+                        stars.forEach((star, index) => {
+                            if (index < rating) {
+                                star.classList.remove('far');
+                                star.classList.add('fas', 'text-yellow-400');
+                            } else {
+                                star.classList.remove('fas', 'text-yellow-400');
+                                star.classList.add('far');
+                            }
+                        });
+                    }
+                });
+            }
+
+            const form = formContainer.querySelector('form');
+            form.addEventListener('submit', handleSubmit);
+
+            // Add event listeners for audio and video recording
+            const recordAudioBtn = document.getElementById('recordAudio');
+            const recordVideoBtn = document.getElementById('recordVideo');
+            
+            if (recordAudioBtn) {
+                recordAudioBtn.addEventListener('click', () => startRecording('audio'));
+            }
+            
+            if (recordVideoBtn) {
+                recordVideoBtn.addEventListener('click', () => startRecording('video'));
+            }
+        }
+
+        function handleSubmit(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            console.log('Form submitted:', data);
+            alert('Form submitted successfully!');
+            e.target.reset();
+        }
+
+        navTabs.addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                const tab = e.target.dataset.tab;
+                activeTab = tab;
+                renderForm(tab);
+                navTabs.querySelectorAll('button').forEach(btn => {
+                    btn.classList.remove('text-blue-600');
+                    btn.classList.add('text-gray-600');
+                });
+                e.target.classList.remove('text-gray-600');
+                e.target.classList.add('text-blue-600');
+            }
+        });
+
+        let mediaRecorder;
+        let recordedChunks = [];
+
+        async function startRecording(mediaType) {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio: true,
+                video: mediaType === 'video'
+            });
+
+            mediaRecorder = new MediaRecorder(stream);
+
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    recordedChunks.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(recordedChunks, {
+                    type: mediaType === 'video' ? 'video/webm' : 'audio/webm'
+                });
+                const url = URL.createObjectURL(blob);
+                displayRecordedMedia(url, mediaType);
+            };
+
+            mediaRecorder.start();
+            setTimeout(() => mediaRecorder.stop(), 5000); // Record for 5 seconds
+        }
+
+        function displayRecordedMedia(url, mediaType) {
+            const mediaPreview = document.getElementById('mediaPreview');
+            mediaPreview.innerHTML = '';
+
+            if (mediaType === 'audio') {
+                const audio = document.createElement('audio');
+                audio.src = url;
+                audio.controls = true;
+                mediaPreview.appendChild(audio);
+            } else {
+                const video = document.createElement('video');
+                video.src = url;
+                video.controls = true;
+                mediaPreview.appendChild(video);
+            }
+        }
+        
+        // Initial render
+        renderForm(activeTab);
+    </script>
+</body>
+</html>

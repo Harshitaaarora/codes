@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RailMadad - A Grievance Redressal Mechanism</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+        <!-- Header and navigation remain unchanged -->
+        
+        <div class="p-4" id="form-container">
+            <!-- Forms will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <script>
+        const formContainer = document.getElementById('form-container');
+        const navTabs = document.getElementById('nav-tabs');
+        let activeTab = 'train';
+
+        const forms = {
+            train: `
+                <form id="trainForm" class="space-y-4">
+                    <h2 class="text-lg font-semibold">Get instant help for train related complaint</h2>
+                    <!-- Other form fields remain unchanged -->
+                    <div>
+                        <label for="complaintDescription" class="block text-sm font-medium text-gray-700">Complaint Description *</label>
+                        <textarea id="complaintDescription" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required></textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <button type="button" id="recordAudio" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                            Record Audio
+                        </button>
+                        <button type="button" id="recordVideo" class="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                            Record Video
+                        </button>
+                    </div>
+                    <div id="mediaPreview"></div>
+                    <div class="file-upload"></div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                        Submit
+                    </button>
+                </form>
+            `,
+            station: `
+                <form id="stationForm" class="space-y-4">
+                    <h2 class="text-lg font-semibold">Get instant help for station related complaint</h2>
+                    <!-- Other form fields remain unchanged -->
+                    <div>
+                        <label for="inquiryDescription" class="block text-sm font-medium text-gray-700">Inquiry Description *</label>
+                        <textarea id="inquiryDescription" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required></textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <button type="button" id="recordAudio" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                            Record Audio
+                        </button>
+                        <button type="button" id="recordVideo" class="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                            Record Video
+                        </button>
+                    </div>
+                    <div id="mediaPreview"></div>
+                    <div class="file-upload"></div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                        Submit
+                    </button>
+                </form>
+            `,
+            freight: `
+                <form id="freightForm" class="space-y-4">
+                    <h2 class="text-lg font-semibold">Freight Parcel Inquiry</h2>
+                    <!-- Other form fields remain unchanged -->
+                    <div>
+                        <label for="inquiryDescription" class="block text-sm font-medium text-gray-700">Inquiry Description *</label>
+                        <textarea id="inquiryDescription" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required></textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <button type="button" id="recordAudio" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                            Record Audio
+                        </button>
+                        <button type="button" id="recordVideo" class="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                            Record Video
+                        </button>
+                    </div>
+                    <div id="mediaPreview"></div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                        Submit
+                    </button>
+                </form>
+            `,
+            suggestions: `
+                <form id="suggestionsForm" class="space-y-4">
+                    <h2 class="text-lg font-semibold">Your suggestion is valuable for us</h2>
+                    <!-- Other form fields remain unchanged -->
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-700">Description *</label>
+                        <textarea id="description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required></textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <button type="button" id="recordAudio" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                            Record Audio
+                        </button>
+                        <button type="button" id="recordVideo" class="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                            Record Video
+                        </button>
+                    </div>
+                    <div id="mediaPreview"></div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                        Submit
+                    </button>
+                </form>
+            `,
+            anubhav: `
+                <form id="anubhavForm" class="space-y-4">
+                    <h2 class="text-lg font-semibold">Rail Anubhav - Share Your Experience</h2>
+                    <!-- Other form fields remain unchanged -->
+                    <div>
+                        <label for="experience" class="block text-sm font-medium text-gray-700">Write your Experience *</label>
+                        <textarea id="experience" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required></textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <button type="button" id="recordAudio" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                            Record Audio
+                        </button>
+                        <button type="button" id="recordVideo" class="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                            Record Video
+                        </button>
+                    </div>
+                    <div id="mediaPreview"></div>
+                    <!-- Other form fields remain unchanged -->
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                        Submit
+                    </button>
+                </form>
+            `
+        };
+
+        function renderForm(tab) {
+            formContainer.innerHTML = forms[tab];
+            const fileUploadDivs = document.querySelectorAll('.file-upload');
+            fileUploadDivs.forEach(div => {
+                div.innerHTML = `
+                    <label class="block text-sm font-medium text-gray-700">File</label>
+                    <div class="mt-1 flex space-x-2">
+                        <button type="button" class="px-4 py-2 bg-blue-500 text-white rounded-md flex items-center">
+                            <i class="fas fa-camera mr-2"></i>
+                            Camera
+                        </button>
+                        <button type="button" class="px-4 py-2 bg-green-500 text-white rounded-md flex items-center">
+                            <i class="fas fa-upload mr-2"></i>
+                            Upload
+                        </button>
+                    </div>
+                    <p class="mt-1 text-xs text-gray-500">Only JPG, JPEG and PNG images are allowed (Max Size: 5MB)</p>
+                `;
+            });
+
+            if (tab === 'anubhav') {
+                const ratingContainer = document.getElementById('rating');
+                ratingContainer.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'I') {
+                        const rating = parseInt(e.target.dataset.rating);
+                        const stars = ratingContainer.querySelectorAll('i');
+                        stars.forEach((star, index) => {
+                            if (index < rating) {
+                                star.classList.remove('far');
+                                star.classList.add('fas', 'text-yellow-400');
+                            } else {
+                                star.classList.remove('fas', 'text-yellow-400');
+                                star.classList.add('far');
+                            }
+                        });
+                    }
+                });
+            }
+
+            const form = formContainer.querySelector('form');
+            form.addEventListener('submit', handleSubmit);
+
+            // Add event listeners for audio and video recording
+            const recordAudioBtn = document.getElementById('recordAudio');
+            const recordVideoBtn = document.getElementById('recordVideo');
+            
+            if (recordAudioBtn) {
+                recordAudioBtn.addEventListener('click', () => startRecording('audio'));
+            }
+            
+            if (recordVideoBtn) {
+                recordVideoBtn.addEventListener('click', () => startRecording('video'));
+            }
+        }
+
+        function handleSubmit(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            console.log('Form submitted:', data);
+            alert('Form submitted successfully!');
+            e.target.reset();
+        }
+
+        navTabs.addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                const tab = e.target.dataset.tab;
+                activeTab = tab;
+                renderForm(tab);
+                navTabs.querySelectorAll('button').forEach(btn => {
+                    btn.classList.remove('text-blue-600');
+                    btn.classList.add('text-gray-600');
+                });
+                e.target.classList.remove('text-gray-600');
+                e.target.classList.add('text-blue-600');
+            }
+        });
+
+        let mediaRecorder;
+        let recordedChunks = [];
+
+        async function startRecording(mediaType) {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio: true,
+                video: mediaType === 'video'
+            });
+
+            mediaRecorder = new MediaRecorder(stream);
+
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    recordedChunks.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(recordedChunks, {
+                    type: mediaType === 'video' ? 'video/webm' : 'audio/webm'
+                });
+                const url = URL.createObjectURL(blob);
+                displayRecordedMedia(url, mediaType);
+            };
+
+            mediaRecorder.start();
+            setTimeout(() => mediaRecorder.stop(), 5000); // Record for 5 seconds
+        }
+
+        function displayRecordedMedia(url, mediaType) {
+            const mediaPreview = document.getElementById('mediaPreview');
+            mediaPreview.innerHTML = '';
+
+            if (mediaType === 'audio') {
+                const audio = document.createElement('audio');
+                audio.src = url;
+                audio.controls = true;
+                mediaPreview.appendChild(audio);
+            } else {
+                const video = document.createElement('video');
+                video.src = url;
+                video.controls = true;
+                mediaPreview.appendChild(video);
+            }
+        }
+        
+        // Initial render
+        renderForm(activeTab);
+    </script>
+</body>
+</html>
