@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RailMadad - Chatbot Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="min-h-screen bg-gray-100 flex flex-col">
+    <header class="bg-white shadow">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-blue-600">RailMadad</h1>
+            <p class="text-sm text-gray-500">A Grievance Redressal Mechanism</p>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto py-6 sm:px-6 lg:px-8 flex flex-col">
+        <div class="px-4 py-6 sm:px-0 flex-grow flex flex-col">
+            <h2 class="text-2xl font-semibold text-gray-900 mb-6">Chatbot Assistant</h2>
+
+            <!-- Chat Container -->
+            <div id="chatContainer" class="flex-grow bg-white shadow-md rounded-lg p-6 overflow-y-auto mb-4 flex flex-col space-y-4">
+                <!-- Chat messages will be dynamically added here -->
+            </div>
+
+            <!-- User Input -->
+            <div class="mt-4">
+                <form id="userInputForm" class="flex items-center">
+                    <input type="text" id="userInput" class="flex-grow rounded-l-md border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-2" placeholder="Type your message...">
+                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-r-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <i class="fas fa-paper-plane mr-2"></i>
+                        Send
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <nav class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex space-x-8">
+                    <a href="index.html" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-home mr-1"></i>
+                        Home
+                    </a>
+                    <a href="#" class="inline-flex items-center px-1 pt-1 border-b-2 border-blue-500 text-sm font-medium text-gray-900">
+                        <i class="fas fa-robot mr-1"></i>
+                        Chatbot
+                    </a>
+                    <a href="help.html" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-question-circle mr-1"></i>
+                        Help
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+        const chatContainer = document.getElementById('chatContainer');
+        const userInputForm = document.getElementById('userInputForm');
+        const userInput = document.getElementById('userInput');
+
+        // Chatbot decision tree
+        const chatbotTree = {
+            welcome: {
+                message: "Welcome to RailMadad Chatbot! How can I assist you today?",
+                options: [
+                    { text: "File a complaint", next: "fileComplaint" },
+                    { text: "Check complaint status", next: "checkStatus" },
+                    { text: "General information", next: "generalInfo" },
+                    { text: "Emergency assistance", next: "emergency" }
+                ]
+            },
+            fileComplaint: {
+                message: "I can help you file a complaint. What type of issue are you facing?",
+                options: [
+                    { text: "Train delay", next: "delayComplaint" },
+                    { text: "Cleanliness", next: "cleanlinessComplaint" },
+                    { text: "Staff behavior", next: "staffComplaint" },
+                    { text: "Other", next: "otherComplaint" }
+                ]
+            },
+            checkStatus: {
+                message: "To check your complaint status, please provide your complaint number:",
+                input: true,
+                next: "statusResult"
+            },
+            generalInfo: {
+                message: "What information are you looking for?",
+                options: [
+                    { text: "Train schedules", next: "trainSchedules" },
+                    { text: "Fare information", next: "fareInfo" },
+                    { text: "Station facilities", next: "stationFacilities" },
+                    { text: "Refund policy", next: "refundPolicy" }
+                ]
+            },
+            emergency: {
+                message: "For immediate emergency assistance, please call our helpline at 139. Do you need any other information?",
+                options: [
+                    { text: "Yes, go back to main menu", next: "welcome" },
+                    { text: "No, end chat", next: "endChat" }
+                ]
+            },
+            delayComplaint: {
+                message: "I'm sorry to hear about the delay. Please provide the train number and date of journey:",
+                input: true,
+                next: "complaintFiled"
+            },
+            cleanlinessComplaint: {
+                message: "We take cleanliness very seriously. Please provide details about the cleanliness issue:",
+                input: true,
+                next: "complaintFiled"
+            },
+            staffComplaint: {
+                message: "We're sorry for any inconvenience. Please describe the staff behavior issue:",
+                input: true,
+                next: "complaintFiled"
+            },
+            otherComplaint: {
+                message: "Please describe your issue in detail:",
+                input: true,
+                next: "complaintFiled"
+            },
+            statusResult: {
+                message: "Thank you. Your complaint status will be displayed here. (In a real system, this would fetch the actual status)",
+                options: [
+                    { text: "Go back to main menu", next: "welcome" },
+                    { text: "End chat", next: "endChat" }
+                ]
+            },
+            trainSchedules: {
+                message: "You can check train schedules on our official website or mobile app. Would you like more information?",
+                options: [
+                    { text: "Yes, tell me more", next: "moreScheduleInfo" },
+                    { text: "No, go back to main menu", next: "welcome" }
+                ]
+            },
+            fareInfo: {
+                message: "Fare information is available on our website and app. You can also inquire at the station ticket counter. Need more details?",
+                options: [
+                    { text: "Yes, tell me more", next: "moreFareInfo" },
+                    { text: "No, go back to main menu", next: "welcome" }
+                ]
+            },
+            stationFacilities: {
+                message: "Our stations offer various facilities including waiting rooms, food courts, and accessibility features. What specific information do you need?",
+                options: [
+                    { text: "Accessibility", next: "accessibilityInfo" },
+                    { text: "Food and beverages", next: "foodInfo" },
+                    { text: "Luggage services", next: "luggageInfo" },
+                    { text: "Go back to main menu", next: "welcome" }
+                ]
+            },
+            refundPolicy: {
+                message: "Our refund policy varies based on the type of ticket and timing of cancellation. Would you like to know more?",
+                options: [
+                    { text: "Yes, provide details", next: "refundDetails" },
+                    { text: "No, go back to main menu", next: "welcome" }
+                ]
+            },
+            complaintFiled: {
+                message: "Thank you for providing the information. Your complaint has been filed. Is there anything else I can help you with?",
+                options: [
+                    { text: "Yes, go back to main menu", next: "welcome" },
+                    { text: "No, end chat", next: "endChat" }
+                ]
+            },
+            moreScheduleInfo: {
+                message: "You can download our mobile app for real-time train tracking and schedule updates. Would you like the download link?",
+                options: [
+                    { text: "Yes, provide link", next: "appLink" },
+                    { text: "No, go back to main menu", next: "welcome" }
+                ]
+            },
+            moreFareInfo: {
+                message: "We offer various classes of travel and seasonal discounts. For personalized fare quotes, please use our fare calculator on the website.",
+                options: [
+                    { text: "Go back to main menu", next: "welcome" },
+                    { text: "End chat", next: "endChat" }
+                ]
+            },
+            accessibilityInfo: {
+                message: "Our stations are equipped with ramps, elevators, and wheelchair services. Need any specific accessibility information?",
+                options: [
+                    { text: "Request assistance", next: "assistanceRequest" },
+                    { text: "Go back to main menu", next: "welcome" }
+                ]
+            },
+            foodInfo: {
+                message: "Most major stations have food courts and vendors. You can also pre-book meals for your journey through our website or app.",
+                options: [
+                    { text: "Go back to main menu", next: "welcome" },
+                    { text: "End chat", next: "endChat" }
+                ]
+            },
+            luggageInfo: {
+                message: "We offer porter services and luggage rooms at major stations. Please check with the station master for availability and charges.",
+                options: [
+                    { text: "Go back to main menu", next: "welcome" },
+                    { text: "End chat", next: "endChat" }
+                ]
+            },
+            refundDetails: {
+                message: "For confirmed tickets, full refund is available up to 24 hours before departure. Cancellation charges apply for later cancellations. Check our website for the full policy.",
+                options: [
+                    { text: "Go back to main menu", next: "welcome" },
+                    { text: "End chat", next: "endChat" }
+                ]
+            },
+            appLink: {
+                message: "You can download our app from the App Store or Google Play Store. Search for 'RailMadad' in your device's app store.",
+                options: [
+                    { text: "Go back to main menu", next: "welcome" },
+                    { text: "End chat", next: "endChat" }
+                ]
+            },
+            assistanceRequest: {
+                message: "To request assistance, please contact our helpline at 139 or speak with the station master upon arrival. Is there anything else you need?",
+                options: [
+                    { text: "Go back to main menu", next: "welcome" },
+                    { text: "End chat", next: "endChat" }
+                ]
+            },
+            endChat: {
+                message: "Thank you for using RailMadad Chatbot. Have a great day!",
+                options: []
+            }
+        };
+
+        let currentNode = 'welcome';
+
+        function addMessage(sender, message) {
+            const messageElement = document.createElement('div');
+            messageElement.className = `${sender === 'bot' ? 'bg-blue-100' : 'bg-gray-100'} p-4 rounded-lg`;
+            messageElement.innerHTML = `<p class="text-sm ${sender === 'bot' ? 'text-blue-800' : 'text-gray-800'}">${message}</p>`;
+            chatContainer.appendChild(messageElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function addOptions(options) {
+            const optionsContainer = document.createElement('div');
+            optionsContainer.className = 'flex flex-wrap gap-2 mt-2';
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded';
+                button.textContent = option.text;
+                button.onclick = () => handleUserInput(option.text, option.next);
+                optionsContainer.appendChild(button);
+            });
+            chatContainer.appendChild(optionsContainer);
+        }
+
+        function handleUserInput(input, nextNode) {
+            addMessage('user', input);
+            currentNode = nextNode;
+            processCurrentNode();
+        }
+
+        function processCurrentNode() {
+            const node = chatbotTree[currentNode];
+            addMessage('bot', node.message);
+            if (node.options) {
+                addOptions(node.options);
+            } else if (node.input) {
+                userInput.focus();
+            }
+        }
+
+        userInputForm.onsubmit = (e) => {
+            e.preventDefault();
+            const input = userInput.value.trim();
+            if (input) {
+                handleUserInput(input, chatbotTree[currentNode].next);
+                userInput.value = '';
+            }
+        };
+
+        // Start the chat
+        processCurrentNode();
+    </script>
+</body>
+</html>

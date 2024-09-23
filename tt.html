@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RailMadad - Trending Tweets</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="min-h-screen bg-gray-100">
+    <header class="bg-white shadow">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-blue-600">RailMadad</h1>
+            <p class="text-sm text-gray-500">A Grievance Redressal Mechanism</p>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div class="px-4 py-6 sm:px-0">
+            <h2 class="text-2xl font-semibold text-gray-900 mb-6">Trending Tweets</h2>
+
+            <!-- Filter Buttons -->
+            <div class="mb-6 flex flex-wrap gap-2">
+                <button id="allTweets" class="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">All Tweets</button>
+                <button id="positiveFeedback" class="px-4 py-2 bg-green-500 text-white rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">Positive Feedback</button>
+                <button id="negativeInsights" class="px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">Negative Insights</button>
+                <button id="railwayUpdates" class="px-4 py-2 bg-yellow-500 text-white rounded-full hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50">Railway Updates</button>
+            </div>
+
+            <!-- Tweets Container -->
+            <div id="tweetsContainer" class="space-y-4">
+                <!-- Tweets will be dynamically added here -->
+            </div>
+        </div>
+    </main>
+
+    <nav class="bg-white shadow fixed bottom-0 inset-x-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex space-x-8">
+                    <a href="index.html" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-home mr-1"></i>
+                        Home
+                    </a>
+                    <a href="#" class="inline-flex items-center px-1 pt-1 border-b-2 border-blue-500 text-sm font-medium text-gray-900">
+                        <i class="fab fa-twitter mr-1"></i>
+                        Trending
+                    </a>
+                    <a href="help.html" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-question-circle mr-1"></i>
+                        Help
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+        // Sample data for tweets
+        const tweets = [
+            { id: 1, user: '@RailwayUser1', content: 'Just had a great experience on the new express train! #PositiveRailways', timestamp: '2 hours ago', category: 'positive' },
+            { id: 2, user: '@Commuter247', content: 'Delays on the northern line again. When will this be fixed? #RailwayFrustration', timestamp: '1 hour ago', category: 'negative' },
+            { id: 3, user: '@RailwayUpdates', content: 'New safety measures being implemented across all major stations starting next week. #SafetyFirst', timestamp: '30 minutes ago', category: 'update' },
+            { id: 4, user: '@SatisfiedTraveler', content: 'Kudos to the staff at Central Station for their excellent service today! #CustomerService', timestamp: '45 minutes ago', category: 'positive' },
+            { id: 5, user: '@ConcernedCitizen', content: 'Overcrowding on peak hour trains is becoming unbearable. We need more frequent services! #RailwayImprovements', timestamp: '3 hours ago', category: 'negative' },
+            { id: 6, user: '@RailEnthusiast', content: 'Excited about the new high-speed rail project! This will revolutionize inter-city travel. #FutureOfRail', timestamp: '1 day ago', category: 'update' },
+        ];
+
+        // Function to render tweets
+        function renderTweets(category = 'all') {
+            const tweetsContainer = document.getElementById('tweetsContainer');
+            tweetsContainer.innerHTML = tweets
+                .filter(tweet => category === 'all' || tweet.category === category)
+                .map(tweet => `
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <div class="flex items-center">
+                            <img class="h-12 w-12 rounded-full" src="https://via.placeholder.com/48" alt="${tweet.user} avatar">
+                            <div class="ml-4">
+                                <h3 class="text-lg font-semibold">${tweet.user}</h3>
+                                <p class="text-gray-500 text-sm">${tweet.timestamp}</p>
+                            </div>
+                        </div>
+                        <p class="mt-4 text-gray-800">${tweet.content}</p>
+                        <div class="mt-4 flex justify-between items-center">
+                            <div class="flex space-x-4">
+                                <button class="text-gray-500 hover:text-blue-500">
+                                    <i class="far fa-comment"></i> Reply
+                                </button>
+                                <button class="text-gray-500 hover:text-green-500">
+                                    <i class="fas fa-retweet"></i> Retweet
+                                </button>
+                                <button class="text-gray-500 hover:text-red-500">
+                                    <i class="far fa-heart"></i> Like
+                                </button>
+                            </div>
+                            <button class="text-gray-500 hover:text-blue-500">
+                                <i class="fas fa-share"></i> Share
+                            </button>
+                        </div>
+                    </div>
+                `)
+                .join('');
+        }
+
+        // Event listeners for filter buttons
+        document.getElementById('allTweets').addEventListener('click', () => renderTweets('all'));
+        document.getElementById('positiveFeedback').addEventListener('click', () => renderTweets('positive'));
+        document.getElementById('negativeInsights').addEventListener('click', () => renderTweets('negative'));
+        document.getElementById('railwayUpdates').addEventListener('click', () => renderTweets('update'));
+
+        // Initial render
+        renderTweets();
+
+        // Simulating real-time updates
+        setInterval(() => {
+            const newTweet = {
+                id: tweets.length + 1,
+                user: '@RandomUser' + Math.floor(Math.random() * 1000),
+                content: 'New update: ' + Math.random().toString(36).substring(7),
+                timestamp: 'Just now',
+                category: ['positive', 'negative', 'update'][Math.floor(Math.random() * 3)]
+            };
+            tweets.unshift(newTweet);
+            renderTweets();
+        }, 30000); // Add a new tweet every 30 seconds
+    </script>
+</body>
+</html>

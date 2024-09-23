@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RailMadad - Grievance Community</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="min-h-screen bg-gray-100">
+    <header class="bg-white shadow">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-blue-600">RailMadad</h1>
+            <p class="text-sm text-gray-500">A Grievance Redressal Mechanism</p>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div class="px-4 py-6 sm:px-0">
+            <h2 class="text-2xl font-semibold text-gray-900 mb-6">Grievance Community</h2>
+
+            <!-- New Post Form -->
+            <form id="newPostForm" class="bg-white shadow-md rounded-lg p-6 mb-8">
+                <div class="mb-4">
+                    <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                    <input type="text" id="title" name="title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required>
+                </div>
+                <div class="mb-4">
+                    <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                    <textarea id="description" name="description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required></textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Upload Media</label>
+                    <div class="mt-1 flex items-center">
+                        <input type="file" id="mediaUpload" accept="image/*,video/*" class="hidden">
+                        <button type="button" onclick="document.getElementById('mediaUpload').click()" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <i class="fas fa-camera mr-2"></i>
+                            Upload Photo/Video
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Post Grievance
+                    </button>
+                </div>
+            </form>
+
+            <!-- Grievance Posts -->
+            <div id="grievancePosts" class="space-y-6">
+                <!-- Posts will be dynamically added here -->
+            </div>
+        </div>
+    </main>
+
+    <nav class="bg-white shadow fixed bottom-0 inset-x-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex space-x-8">
+                    <a href="index.html" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-home mr-1"></i>
+                        Home
+                    </a>
+                    <a href="#" class="inline-flex items-center px-1 pt-1 border-b-2 border-blue-500 text-sm font-medium text-gray-900">
+                        <i class="fas fa-users mr-1"></i>
+                        Community
+                    </a>
+                    <a href="help.html" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-question-circle mr-1"></i>
+                        Help
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+        // Sample data for initial posts
+        let posts = [
+            {
+                id: 1,
+                user: 'Passenger123',
+                title: 'Broken seat in coach B2',
+                description: 'The seat 34 in coach B2 is broken and needs immediate repair.',
+                media: 'https://via.placeholder.com/300x200',
+                votes: 5,
+                comments: [
+                    { id: 1, user: 'Traveler456', text: 'I noticed this too. Its been like this for a week!' },
+                ]
+            }
+        ];
+
+        // Function to render all posts
+        function renderPosts() {
+            const postsContainer = document.getElementById('grievancePosts');
+            postsContainer.innerHTML = posts.map(post => `
+                <div class="bg-white shadow-md rounded-lg overflow-hidden">
+                    <div class="p-6">
+                        <h3 class="text-lg font-medium text-gray-900">${post.title}</h3>
+                        <p class="mt-1 text-sm text-gray-500">Posted by ${post.user}</p>
+                        <p class="mt-2 text-gray-700">${post.description}</p>
+                        <img src="${post.media}" alt="Grievance" class="mt-4 w-full h-48 object-cover">
+                        <div class="mt-4 flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <button onclick="handleVote(${post.id}, true)" class="flex items-center text-gray-400 hover:text-blue-500">
+                                    <i class="fas fa-chevron-up"></i>
+                                </button>
+                                <span class="text-gray-600 font-medium">${post.votes}</span>
+                                <button onclick="handleVote(${post.id}, false)" class="flex items-center text-gray-400 hover:text-blue-500">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </div>
+                            <button class="flex items-center text-gray-400 hover:text-blue-500">
+                                <i class="fas fa-comment mr-1"></i>
+                                <span>${post.comments.length} Comments</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-6 py-4">
+                        ${post.comments.map(comment => `
+                            <div class="mb-2">
+                                <p class="text-sm text-gray-600">
+                                    <span class="font-medium">${comment.user}:</span> ${comment.text}
+                                </p>
+                            </div>
+                        `).join('')}
+                        <form onsubmit="handleAddComment(event, ${post.id})" class="mt-2 flex">
+                            <input type="text" name="comment" placeholder="Add a comment..." class="flex-grow rounded-l-md border-gray-300 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-r-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                Post
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Function to handle voting
+        function handleVote(id, increment) {
+            posts = posts.map(post =>
+                post.id === id ? { ...post, votes: post.votes + (increment ? 1 : -1) } : post
+            );
+            renderPosts();
+        }
+
+        // Function to handle adding comments
+        function handleAddComment(event, postId) {
+            event.preventDefault();
+            const form = event.target;
+            const comment = form.comment.value;
+            posts = posts.map(post =>
+                post.id === postId
+                    ? {
+                        ...post,
+                        comments: [
+                            ...post.comments,
+                            { id: post.comments.length + 1, user: 'CurrentUser', text: comment }
+                        ]
+                    }
+                    : post
+            );
+            renderPosts();
+            form.reset();
+        }
+
+        // Function to handle new post submission
+        document.getElementById('newPostForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const newId = posts.length + 1;
+            posts.unshift({
+                id: newId,
+                user: 'CurrentUser',
+                title: title,
+                description: description,
+                media: 'https://via.placeholder.com/300x200', // Replace with actual uploaded media
+                votes: 0,
+                comments: []
+            });
+            renderPosts();
+            this.reset();
+        });
+
+        // Initial render
+        renderPosts();
+    </script>
+</body>
+</html>
